@@ -1,0 +1,30 @@
+# Ignore Django migration files
+**/migrations/
+
+# Ignore SQLite database file (if using SQLite)
+*.sqlite3
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore environment variables file (if used)
+.env
+
+# Ignore Node.js modules
+node_modules/
+
+# Ignore npm lock file
+package-lock.json
+
+# Ignore built files for React app
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/.nuxt/
+frontend/out/
+
+# Ignore editor-specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
