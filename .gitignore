@@ -18,11 +18,11 @@ node_modules/
 package-lock.json
 
 # Ignore built files for React app
-frontend/build/
-frontend/dist/
-frontend/.next/
-frontend/.nuxt/
-frontend/out/
+FE/build/
+FE/dist/
+FE/.next/
+FE/.nuxt/
+FE/out/
 
 # Ignore editor-specific files
 .vscode/
