@@ -9,9 +9,10 @@ function HomeScreen() {
       <h1>Latest Products</h1>
       <Row>
         {products.map(product => (
-            <Col key={products._id} Sm={12} Md={6} Lg={4} xl={3}>
-                <Product product={product} />
-            </Col>
+        <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+            <Product product={product} />
+        </Col>
+        
         ))}
       </Row>
     </div>
