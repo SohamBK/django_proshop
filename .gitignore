@@ -28,3 +28,5 @@ FE/out/
 .vscode/
 *.sublime-project
 *.sublime-workspace
+
+/myenv
