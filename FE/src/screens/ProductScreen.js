@@ -1,25 +1,29 @@
-import React, {useState, useEffect} from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom"; // Import useParams hook
 import { Row, Col, Image, ListGroup, Button, Card } from "react-bootstrap";
 import Rating from "../components/Rating";
-import products from "../products";
-import { useParams } from "react-router-dom";
 import axios from 'axios';
 
-function ProductScreen({ match }) {
-  // const { id } = useParams();
-  // const product = products.find((p) => p._id === id);
-
-  const [product, setProduct] = useState([]);
+function ProductScreen() {
+  const { id } = useParams(); // Use useParams to get the id parameter from the URL
+  const [product, setProduct] = useState(null); // Initialize product state as null
 
   useEffect(() => {
-    async function fetchProducts(){
-      const { data } = await axios.get(`/api/products/${match.params.id}`)
-      setProduct(data)
+    async function fetchProduct() {
+      try {
+        const { data } = await axios.get(`/api/products/${id}`); // Use the id parameter in the URL
+        setProduct(data);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
     }
 
-    fetchProducts()
-  }, [])
+    fetchProduct();
+  }, [id]); // Include id in the dependency array to re-fetch product when id changes
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -72,7 +76,7 @@ function ProductScreen({ match }) {
               <ListGroup.Item>
                 <Button
                   className="btn-block"
-                  disabled={product.countInStock == 0}
+                  disabled={product.countInStock === 0}
                   type="button"
                 >
                   Add to Cart
