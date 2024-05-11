@@ -1,29 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom"; // Import useParams hook
+import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"; // Import useParams hook
 import { Row, Col, Image, ListGroup, Button, Card } from "react-bootstrap";
 import Rating from "../components/Rating";
 import axios from 'axios';
+import { fetchProductDetails } from '../features/products/productsSlice';
+
 
 function ProductScreen() {
-  const { id } = useParams(); // Use useParams to get the id parameter from the URL
-  const [product, setProduct] = useState(null); // Initialize product state as null
-
+  const { product, isLoading, isError, error } = useSelector(
+    (state) => state.products
+  );
+  const dispatch = useDispatch();
+  const { id } = useParams();
+ 
   useEffect(() => {
-    async function fetchProduct() {
-      try {
-        const { data } = await axios.get(`/api/products/${id}`); // Use the id parameter in the URL
-        setProduct(data);
-      } catch (error) {
-        console.error('Error fetching product:', error);
-      }
-    }
-
-    fetchProduct();
-  }, [id]); // Include id in the dependency array to re-fetch product when id changes
-
-  if (!product) {
-    return <div>Loading...</div>;
-  }
+    dispatch(fetchProductDetails(id));
+  }, [dispatch, id]);
 
   return (
     <div>
