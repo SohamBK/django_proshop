@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import Product from '../components/Product';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProducts } from '../features/products/productsSlice';
+import { fetchProducts } from '../features/productsSlice';
 
 function HomeScreen() {
   const dispatch = useDispatch();
