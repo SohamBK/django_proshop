@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap';
 import Message from '../components/Message';
 import { addItemToCart, removeItemFromCart } from '../features/cartSlice';
-import { fetchProductDetails } from '../features/productsSlice';
+import { fetchProductDetails, fetchProducts } from '../features/productsSlice';
 
 function CartScreen() {
     const { id: productId } = useParams();
@@ -16,17 +16,23 @@ function CartScreen() {
     const cart = useSelector(state => state.cart);
     const { cartItems } = cart;
 
-    const products = useSelector(state => state.products); // Assuming products are stored in products slice
+    const products = useSelector(state => state.products.products);
+    const productLoading = useSelector(state => state.products.isLoading);
+    const productError = useSelector(state => state.products.isError);
 
     useEffect(() => {
         if (productId) {
-            dispatch(addItemToCart({ product: productId, quantity: qty }));
+            dispatch(addItemToCart({ product: productId, qty }));
         }
     }, [dispatch, productId, qty]);
 
     useEffect(() => {
+        dispatch(fetchProducts());
+    }, [dispatch]);
+
+    useEffect(() => {
         cartItems.forEach(item => {
-            if (!products.find(p => p.id === item.product)) {
+            if (!products.find(p => p._id === item.product)) {
                 dispatch(fetchProductDetails(item.product));
             }
         });
@@ -40,6 +46,14 @@ function CartScreen() {
         navigate('/login?redirect=shipping');
     };
 
+    if (productLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (productError) {
+        return <Message variant='danger'>Error fetching products</Message>;
+    }
+
     return (
         <Row>
             <Col md={8}>
@@ -51,7 +65,10 @@ function CartScreen() {
                 ) : (
                     <ListGroup variant='flush'>
                         {cartItems.map(item => {
-                            const product = products.find(p => p.id === item.product) || {};
+                            console.log('item', item.product)
+                            console.log('all', products)
+                            const product = products.find(p => p._id == item.product) || {};
+                            console.log("product", product)
                             return (
                                 <ListGroup.Item key={item.product}>
                                     <Row>
@@ -67,8 +84,8 @@ function CartScreen() {
                                         <Col md={3}>
                                             <Form.Control
                                                 as="select"
-                                                value={item.quantity}
-                                                onChange={(e) => dispatch(addItemToCart({ product: item.product, quantity: Number(e.target.value) }))}
+                                                value={item.qty}
+                                                onChange={(e) => dispatch(addItemToCart({ product: item.product, qty: Number(e.target.value) }))}
                                             >
                                                 {[...Array(product.countInStock).keys()].map((x) => (
                                                     <option key={x + 1} value={x + 1}>
@@ -97,10 +114,10 @@ function CartScreen() {
                 <Card>
                     <ListGroup variant='flush'>
                         <ListGroup.Item>
-                            <h2>Subtotal ({cartItems.reduce((acc, item) => acc + item.quantity, 0)}) items</h2>
+                            <h2>Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) items</h2>
                             ${cartItems.reduce((acc, item) => {
-                                const product = products.find(p => p.id === item.product) || {};
-                                return acc + item.quantity * (product.price || 0);
+                                const product = products.find(p => p._id == item.product) || {};
+                                return acc + item.qty * (product.price || 0);
                             }, 0).toFixed(2)}
                         </ListGroup.Item>
                     </ListGroup>
