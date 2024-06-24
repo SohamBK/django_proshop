@@ -58,7 +58,7 @@ const productsSlice = createSlice({
         })
         .addCase(fetchProductDetails.pending, (state) => {
           state.isLoading = true;
-          state.isError = false; // Reset isError flag when starting a new request
+          state.isError = false;
         })
         .addCase(fetchProductDetails.fulfilled, (state, action) => {
           state.isLoading = false;
