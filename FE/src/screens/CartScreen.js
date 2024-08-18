@@ -33,6 +33,7 @@ function CartScreen() {
     useEffect(() => {
         cartItems.forEach(item => {
             if (!products.find(p => p._id === item.product)) {
+                console.log("itesm", item.product);
                 dispatch(fetchProductDetails(item.product));
             }
         });
