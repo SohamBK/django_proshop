@@ -5,7 +5,9 @@ import axios from 'axios';
 const initialState = {
     userInfo: null,
     loading: false,
-    error: null
+    error: null,
+    success: false,
+    userDetails: { user: {} },
 };
 
 // Create async thunk for login
@@ -26,9 +28,11 @@ export const login = createAsyncThunk(
             localStorage.setItem('userInfo', JSON.stringify(data));
             return data;
         } catch (error) {
-            return rejectWithValue(error.response && error.response.data.detail
-                ? error.response.data.detail
-                : error.message);
+            return rejectWithValue(
+                error.response && error.response.data.detail
+                    ? error.response.data.detail
+                    : error.message
+            );
         }
     }
 );
@@ -70,11 +74,63 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+// Thunks for user details and update
+export const getUserDetails = createAsyncThunk(
+    'user/getUserDetails',
+    async (id, { getState, rejectWithValue }) => {
+        try {
+            const { user: { userInfo } } = getState();
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            };
+            const { data } = await axios.get(`/api/users/${id}/`, config);
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response && error.response.data.detail
+                    ? error.response.data.detail
+                    : error.message
+            );
+        }
+    }
+);
+
+export const updateUserProfile = createAsyncThunk(
+    'user/updateUserProfile',
+    async (user, { getState, rejectWithValue }) => {
+        try {
+            const { user: { userInfo } } = getState();
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            };
+            const { data } = await axios.put(`/api/users/profile/update/`, user, config);
+            localStorage.setItem('userInfo', JSON.stringify(data));
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response && error.response.data.detail
+                    ? error.response.data.detail
+                    : error.message
+            );
+        }
+    }
+);
+
 // Create the user slice
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+        resetUpdateProfile: (state) => {
+            state.success = false;
+            state.error = null;
+        },
         userLogout: (state) => {
             state.userInfo = null;
             state.error = null;
@@ -108,9 +164,36 @@ const userSlice = createSlice({
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            // Handle getUserDetails
+            .addCase(getUserDetails.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(getUserDetails.fulfilled, (state, action) => {
+                state.loading = false;
+                console.log("in slice ", action.payload)
+                state.userDetails = action.payload;
+            })
+            .addCase(getUserDetails.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Handle updateUserProfile
+            .addCase(updateUserProfile.pending, (state) => {
+                state.loading = true;
+                state.success = false;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                state.userInfo = action.payload;
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     }
 });
 
-export const { userLogout } = userSlice.actions;
+export const { resetUpdateProfile, userLogout } = userSlice.actions;
 export default userSlice.reducer;
