@@ -15,7 +15,6 @@ function ProductScreen() {
   const { id } = useParams();
   const history = useNavigate();
 
- 
   useEffect(() => {
     dispatch(fetchProductDetails(id));
   }, [dispatch, id]);
@@ -23,6 +22,8 @@ function ProductScreen() {
   const addToCartHandler = () => {
     history(`/cart/${id}?qty=${qty}`)
   }
+
+  console.log(product);
 
   return (
     <div>

@@ -27,7 +27,7 @@ export const fetchProductDetails = createAsyncThunk(
     "products/fetchProductDetails",
     async (id) => {
       try {
-        const { data } = await axios.get(`/api/product/${id}/`);
+        const { data } = await axios.get(`/api/products/${id}/`);
         return data;
       } catch (error) {
         throw Error("Failed to fetch product details: " + error.message);
