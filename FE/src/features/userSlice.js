@@ -7,7 +7,7 @@ const initialState = {
     loading: false,
     error: null,
     success: false,
-    userDetails: { user: {} },
+    // userDetails: { user: {} },
 };
 
 // Create async thunk for login
@@ -172,7 +172,7 @@ const userSlice = createSlice({
             .addCase(getUserDetails.fulfilled, (state, action) => {
                 state.loading = false;
                 console.log("in slice ", action.payload)
-                state.userDetails = action.payload;
+                state.userInfo = action.payload;
             })
             .addCase(getUserDetails.rejected, (state, action) => {
                 state.loading = false;

@@ -14,23 +14,18 @@ function ProfileScreen({ history }) {
 
     const dispatch = useDispatch();
 
-    const { userInfo } = useSelector((state) => state.user);
-    const { loading, error, userDetails } = useSelector((state) => state.user);
-
-    const { success } = useSelector((state) => state.userUpdateProfile);
+    // Select userInfo, loading, error, and success states from Redux
+    const { userInfo, loading, error, success } = useSelector((state) => state.user);
 
     useEffect(() => {
         if (!userInfo) {
             history.push('/login');
         } else {
-            if (!userDetails || success || userInfo._id !== userDetails._id) {
-                dispatch(getUserDetails('profile'));
-            } else {
-                setName(userDetails.name);
-                setEmail(userDetails.email);
-            }
+            // Assuming user details are stored in userInfo
+            setName(userInfo.name);
+            setEmail(userInfo.email);
         }
-    }, [dispatch, history, userInfo, userDetails, success]);
+    }, [dispatch, history, userInfo]);
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -38,8 +33,9 @@ function ProfileScreen({ history }) {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
         } else {
+            // Dispatch updateUserProfile with the updated user data
             dispatch(updateUserProfile({
-                id: userDetails._id,
+                id: userInfo._id,
                 name,
                 email,
                 password,
