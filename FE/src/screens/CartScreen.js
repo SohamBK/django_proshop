@@ -13,6 +13,8 @@ function CartScreen() {
     const qty = location.search ? Number(location.search.split('=')[1]) : 1;
     const dispatch = useDispatch();
 
+    const userInfo = useSelector((state) => state.user.userInfo);
+
     const cart = useSelector(state => state.cart);
     const { cartItems } = cart;
 
@@ -43,9 +45,18 @@ function CartScreen() {
         dispatch(removeItemFromCart(id));
     };
 
+    // const checkoutHandler = () => {
+    //     navigate('/login?redirect=shipping');
+    // };
+
     const checkoutHandler = () => {
-        navigate('/login?redirect=shipping');
+        if (!userInfo) {
+            navigate('/login?redirect=shipping');
+        } else {
+            navigate('/shipping');
+        }
     };
+    
 
     if (productLoading) {
         return <div>Loading...</div>;
